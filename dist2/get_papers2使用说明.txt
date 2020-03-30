@@ -1,0 +1,4 @@
+序号和路径的文件以input结尾的txt
+序号文件名邮箱手机号作者的文件以_res结尾
+结果生成get_pappers.txt
+日志get_pappers_log
