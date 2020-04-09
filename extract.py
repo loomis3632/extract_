@@ -61,6 +61,8 @@ def get_info(file_number, file_path):
         # res_temp = ""  # 用于保存已经查找出来的信息。
         file_name = ""
         file_name_flag = 0  # 此时文件名空的
+        file_username =""
+        file_username_flag =0 #此时用户名为空
         file_date = ""
         file_date_flag = 0  # 此时日期为空
         file_content = ""
@@ -72,6 +74,11 @@ def get_info(file_number, file_path):
                 count += 1
                 file_name = line[6:].strip()
                 file_name_flag = 1
+
+            # 得到文件的用户名，并标记
+            if line.startswith('<用户名>='):
+                file_username = line[6:].strip()
+                file_username_flag = 1
 
             # 读到文件内容，标记改变，用于将之后读取的字符串，都作为内容
             if line.startswith('<全文>='):
@@ -88,7 +95,7 @@ def get_info(file_number, file_path):
                 file_date_flag = 1
 
             # 所需要的内容标记词都找到（文件名，文件内容（邮箱手机号作者），上传日期）
-            if file_name_flag == 1 and file_content_flag == 1 and file_date_flag == 1:
+            if file_name_flag == 1 and file_username_flag ==1 and  file_content_flag == 1 and file_date_flag == 1:
                 # 邮箱
                 # email_pattern = r"[\w!#$%&'*+/=?^_`{|}~-]+(?:\.[\w!#$%&'*+/=?^_`{|}~-]+)*@(?:[\w](?:[\w-]*[\w])?\.){1}[\w](?:[\w-]*[\w])?"
                 email_pattern = r"[\w!#$%&'*+/=?^_`{|}~-]+(?:\.[\w!#$%&'*+/=?^_`{|}~-]+)*@(?:[\w](?:[\w-]*[\w])?\.)+[\w](?:[\w-]*[\w])?"
@@ -131,8 +138,8 @@ def get_info(file_number, file_path):
                     length = max(len(email_lists), len(phone_lists))
                     for i in range(length):
                         ele_str = "\t".join(map(str, info_temp_list[i]))
-                        info_temp = "%s%s%s%s%s%s%s%s" % (
-                            file_number, "\t", file_name, "\t", file_date, "\t", ele_str, "\n")
+                        info_temp = "%s%s%s%s%s%s%s%s%s%s" % (
+                            file_number, "\t", file_name, "\t",file_username,"\t", file_date, "\t", ele_str, "\n")
                         res_temp = res_temp + info_temp
 
                     # for ele in info_temp_list:
@@ -150,6 +157,8 @@ def get_info(file_number, file_path):
 
                 file_name = ""
                 file_name_flag = 0
+                file_username = ""
+                file_username_flag = 0  # 此时用户名为空
                 file_date = ""
                 file_date_flag = 0
                 file_content = ""

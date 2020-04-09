@@ -91,12 +91,13 @@ def get_papers():
             for ele in f2:
                 # if len(ele)>1:
                 ele_split = ele.split('\t')
-                if len(ele_split) >= 6:
+                if len(ele_split) >= 7:
                     file_num = ele_split[0].strip()
                     file_name = ele_split[1].strip()
                     email = ele_split[3].strip()
                     phone = ele_split[4].strip()
                     author = ele_split[5].strip()
+                    total_count = ele_split[6].strip()
 
                     if file_num in num_path_dict:
                         txt_path = num_path_dict[file_num]
@@ -104,7 +105,7 @@ def get_papers():
                         # print(count)
                         logging.info('正在处理第：%d文件；文件名：%s；路径：%s；' % (count, file_name, txt_path))
 
-                        insert_content = [author, email, phone]
+                        insert_content = [author, email, phone, total_count]
                         extract_content(txt_path, file_name, insert_content)
 
 
@@ -132,11 +133,13 @@ def extract_content(file_path, file_name, insert_content):
 
                 if file_name == file_name1:
                     flag = 1
-                    insert_author = "<抽取作者>=" + insert_content[0] + '\n'
-                    insert_email = "<抽取邮箱>=" + insert_content[1] + '\n'
-                    insert_phone = "<抽取电话>=" + insert_content[2] + '\n'
-                    res_temp = '<REC>\n' + ele + insert_author + insert_email + insert_phone
-                    continue
+                    if len(insert_content) >= 4:
+                        insert_author = "<抽取作者>=" + insert_content[0] + '\n'
+                        insert_email = "<抽取邮箱>=" + insert_content[1] + '\n'
+                        insert_phone = "<抽取电话>=" + insert_content[2] + '\n'
+                        total_count = "<邮箱计数>=" + insert_content[3] + '\n'
+                        res_temp = '<REC>\n' + ele + insert_author + insert_email + total_count + insert_phone
+                        continue
 
             if flag == 1 and not (ele.startswith('<系统信息>=')):
                 res_temp = '%s%s' % (res_temp, ele)

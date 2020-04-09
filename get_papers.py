@@ -58,23 +58,25 @@ def get_papers():
     with open(res_path, 'r', encoding=coding2, errors='ignore')as f1:
         for ele in f1:
             ele_split = ele.split('\t')
-            file_num = ele_split[0].strip()
-            file_name = ele_split[1].strip()
-            email = ele_split[3].strip()
-            phone = ele_split[4].strip()
-            author = ele_split[5].strip()
+            if len(ele_split) >= 7:
+                file_num = ele_split[0].strip()
+                file_name = ele_split[1].strip()
+                email = ele_split[3].strip()
+                phone = ele_split[4].strip()
+                author = ele_split[5].strip()
+                total_count = ele_split[6].strip()
 
-            with open(input_path, 'r', encoding=coding1, errors='ignore')as f2:
-                for ele1 in f2:
-                    ele1_split = ele1.split('\t')
-                    file_num1 = ele1_split[0].strip()
-                    file_path = ele1_split[1].strip()
+                with open(input_path, 'r', encoding=coding1, errors='ignore')as f2:
+                    for ele1 in f2:
+                        ele1_split = ele1.split('\t')
+                        file_num1 = ele1_split[0].strip()
+                        file_path = ele1_split[1].strip()
 
-                    if file_num == file_num1 and os.path.exists(file_path):
-                        count += 1
-                        logging.info('正在写入第：%d文件；文件名：%s；路径：%s；' % (count, file_name, file_path))
-                        insert_content = [author, email, phone]
-                        extract_content(file_path, file_name, insert_content)
+                        if file_num == file_num1 and os.path.exists(file_path):
+                            count += 1
+                            logging.info('正在写入第：%d文件；文件名：%s；路径：%s；' % (count, file_name, file_path))
+                            insert_content = [author, email, phone, total_count]
+                            extract_content(file_path, file_name, insert_content)
 
 
 def extract_content(file_path, file_name, insert_content):
@@ -101,11 +103,13 @@ def extract_content(file_path, file_name, insert_content):
 
                 if file_name == file_name1:
                     flag = 1
-                    insert_author = "<抽取作者>=" + insert_content[0] + '\n'
-                    insert_email = "<抽取邮箱>=" + insert_content[1] + '\n'
-                    insert_phone = "<抽取电话>=" + insert_content[2] + '\n'
-                    res_temp = '<REC>\n' + ele + insert_author + insert_email + insert_phone
-                    continue
+                    if len(insert_content):
+                        insert_author = "<抽取作者>=" + insert_content[0] + '\n'
+                        insert_email = "<抽取邮箱>=" + insert_content[1] + '\n'
+                        insert_phone = "<抽取电话>=" + insert_content[2] + '\n'
+                        total_count = "<邮箱计数>=" + insert_content[3] + '\n'
+                        res_temp = '<REC>\n' + ele + insert_author + insert_email + total_count + insert_phone
+                        continue
 
             if flag == 1 and not (ele.startswith('<系统信息>=')):
                 res_temp = '%s%s' % (res_temp, ele)
